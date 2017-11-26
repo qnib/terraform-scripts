@@ -34,7 +34,7 @@ resource "aws_subnet" "public" {
 # Create a private subnet to launch our backend instances
 resource "aws_subnet" "private" {
   vpc_id                  = "${aws_vpc.vpc_main.id}"
-  cidr_block              = "10.0.16.0/20" # 10.0.16.0 - 10.0.31.255 (4096)
+  cidr_block              = "10.0.16.0/24" # 10.0.16.0 - 10.0.31.255 (4096)
   map_public_ip_on_launch = true
 }
 
@@ -84,6 +84,14 @@ resource "aws_security_group" "default" {
     cidr_blocks = ["${aws_subnet.private.cidr_block}"]
   }
 
+  # ping access from anywhere
+  ingress {
+     from_port = 8
+     to_port = 0
+     protocol = "icmp"
+     cidr_blocks = ["0.0.0.0/0"]
+   }
+
   # Outbound internet access
   egress {
     from_port   = 0
@@ -98,25 +106,38 @@ resource "aws_key_pair" "auth" {
   public_key = "${file(var.public_key_path)}"
 }
 
-module "slurm_master" {
-    source                 = "./instance"
-    subnet_id              = "${aws_subnet.private.id}"
-    key_pair_id            = "${aws_key_pair.auth.id}"
-    security_group_id      = "${aws_security_group.default.id}"
-    ami_name               = "ami-9ff362e5" //aws-docker-slurm 1511656993
-    instance_type          = "t2.micro"
-    count                  = 1
-    group_name             = "slurm_master"
+module "master" {
+    source                  = "./instance"
+    subnet_id               = "${aws_subnet.private.id}"
+    key_pair_id             = "${aws_key_pair.auth.id}"
+    security_group_id       = "${aws_security_group.default.id}"
+    ami_name                = "ami-8a8819f0" //aws-docker-slurm 1511666208
+    instance_type           = "t2.micro"
+    count                   = 1
+    private_ip              = "10.0.16.10"
+    group_name              = "master"
 }
 
-module "slurm_gpu" {
-    source                 = "./instance"
-    subnet_id              = "${aws_subnet.private.id}"
-    key_pair_id            = "${aws_key_pair.auth.id}"
-    security_group_id      = "${aws_security_group.default.id}"
-    ami_name               = "ami-7fe77605" //aws-docker-slurm-gpu 1511659096
-    instance_type          = "p2.xlarge"
-    count                  = 1
-    group_name             = "slurm_gpu"
+module "cpu" {
+    source                  = "./instances"
+    subnet_id               = "${aws_subnet.private.id}"
+    key_pair_id             = "${aws_key_pair.auth.id}"
+    security_group_id       = "${aws_security_group.default.id}"
+    ami_name                = "ami-8a8819f0" //aws-docker-slurm 1511666208
+    instance_type           = "t2.micro"
+    count                   = 3
+    group_name              = "cpu"
+    provisioner_remote_exec = "sudo systemctl disable slurmctld"
+}
+
+module "gpu" {
+    source                  = "./instance"
+    subnet_id               = "${aws_subnet.private.id}"
+    key_pair_id             = "${aws_key_pair.auth.id}"
+    security_group_id       = "${aws_security_group.default.id}"
+    ami_name                = "ami-52891828" //aws-docker-slurm-gpu 1511666444
+    instance_type           = "p2.xlarge"
+    private_ip              = "10.0.16.30"
+    group_name              = "gpu"
     provisioner_remote_exec = "sudo systemctl disable slurmctld"
 }

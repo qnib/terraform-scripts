@@ -25,15 +25,11 @@ variable "aws_region" {
 
 variable "instance_type" {
   description = "AWS region to launch servers."
-  default     = "p2.xlarge"
+  default     = "t2.micro"
 }
 
 variable "subnet_id" {
   description = "ID of the AWS VPC subnet to use"
-}
-
-variable "private_ip" {
-  description = "private IP of instance"
 }
 
 variable "key_pair_id" {

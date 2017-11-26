@@ -114,7 +114,7 @@ module "slurm_gpu" {
     subnet_id              = "${aws_subnet.private.id}"
     key_pair_id            = "${aws_key_pair.auth.id}"
     security_group_id      = "${aws_security_group.default.id}"
-    ami_name               = "ami-bff263c5" //aws-docker-nvidia-slurm 1511656827
+    ami_name               = "ami-7fe77605" //aws-docker-slurm-gpu 1511659096
     instance_type          = "p2.xlarge"
     count                  = 1
     group_name             = "slurm_gpu"

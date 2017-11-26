@@ -14,23 +14,19 @@ $ cd aws-u16-docker/
 aws-u16-docker $ packer build packer.json
 *snip*
 ```
-Whatever `ami-name` came out from that goes into the next two.
+Whatever `ami-name` came out from that goes into the `slurm` one.
+
+```bash
+$ cd ../aws-u16-slurm/
+aws-u16-slurm $ packer build -var 'ami_name=aws-docker-slurm' -var 'source_ami=ami-<id>' packer.json
+*snip*
+```
+
+And use the output of `aws-docker-slurm` to build `aws-docker-slurm-gpu`.
 
 ```bash
 $ cd aws-u16-gpu/
-aws-u16-gpu $ packer build -var 'ami_name=aws-docker-nvidia' -var 'source_ami=ami-<id>' packer.json
-*snip*
-$ cd ../aws-u16-slurm/
-aws-u16-slurm $ packer build -var 'ami_name=aws-docker-slurm' -var 'source_ami=ami-<id>' packer.json
-```
-
-And use the output of `aws-docker-nvidia` to build `aws-docker-nvidia-slurm`.
-
-*TODO*: [ ] Build `nvidia` from `slurm` to skip one step.
-
-```bash
-$ cd aws-u16-slurm/
-aws-u16-slurm $ packer build -var 'ami_name=aws-docker-nvidia-slurm' -var 'source_ami=ami-<id>' packer.json
+aws-u16-gpu $ packer build -var 'ami_name=aws-docker-slurm-gpu' -var 'source_ami=ami-<id>' packer.json
 *snip*
 ```
 

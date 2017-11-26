@@ -26,7 +26,7 @@ resource "aws_instance" "instances" {
 
   provisioner "remote-exec" {
     inline = [
-      "hostname -b ${format("%s%1d", var.group_name, count.index)}",
+      "sudo hostname -b ${format("%s%1d", var.group_name, count.index)}",
       "${var.provisioner_remote_exec}",
     ]
   }

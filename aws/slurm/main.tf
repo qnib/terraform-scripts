@@ -111,11 +111,12 @@ module "master" {
     subnet_id               = "${aws_subnet.private.id}"
     key_pair_id             = "${aws_key_pair.auth.id}"
     security_group_id       = "${aws_security_group.default.id}"
-    ami_name                = "ami-8a8819f0" //aws-docker-slurm 1511666208
+    ami_name                = "ami-60a6361a" //aws-docker-slurm 1511734159
     instance_type           = "t2.micro"
     count                   = 1
     private_ip              = "10.0.16.10"
     group_name              = "master"
+    provisioner_remote_exec = "echo master |sudo tee /opt/slurm-type"
 }
 
 module "cpu" {
@@ -123,11 +124,11 @@ module "cpu" {
     subnet_id               = "${aws_subnet.private.id}"
     key_pair_id             = "${aws_key_pair.auth.id}"
     security_group_id       = "${aws_security_group.default.id}"
-    ami_name                = "ami-8a8819f0" //aws-docker-slurm 1511666208
+    ami_name                = "ami-60a6361a" //aws-docker-slurm 1511734159
     instance_type           = "t2.micro"
     count                   = 3
     group_name              = "cpu"
-    provisioner_remote_exec = "sudo systemctl disable slurmctld"
+    provisioner_remote_exec = "sudo systemctl disable slurmctld && echo client |sudo tee /opt/slurm-type"
 }
 
 module "gpu" {
@@ -135,9 +136,9 @@ module "gpu" {
     subnet_id               = "${aws_subnet.private.id}"
     key_pair_id             = "${aws_key_pair.auth.id}"
     security_group_id       = "${aws_security_group.default.id}"
-    ami_name                = "ami-52891828" //aws-docker-slurm-gpu 1511666444
+    ami_name                = "ami-6854c412" //aws-docker-gpu-slurm 1511739674
     instance_type           = "p2.xlarge"
     private_ip              = "10.0.16.30"
     group_name              = "gpu"
-    provisioner_remote_exec = "sudo systemctl disable slurmctld"
+    provisioner_remote_exec = "sudo systemctl disable slurmctld && echo client |sudo tee /opt/slurm-type"
 }

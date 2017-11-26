@@ -6,10 +6,6 @@ variable "region" {
   default = "us-east-1"
 }
 
-variable "public_key_name" {
-  description = "Enter the name of the keypair to use"
-}
-
 variable "public_key_path" {
   description = "Enter the path to the SSH Public Key to add to AWS."
   default = "~/.ssh/terraform_aws.pub"

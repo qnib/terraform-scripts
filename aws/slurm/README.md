@@ -1,11 +1,68 @@
-# Slurmn Cluster in aws
+# Slurm Cluster in aws
 Inspired by [Automating AWS infrastructure with Terraform](https://simonfredsted.com/1459).
 
 ## TODO
 
 - [ ] Autoconfigure cluster, so that terraform informs `/etc/slurm-llnl/slurm.conf` about the nodes available. Maybe an ansible script afterwards.
 
+## Build images
+
+For this to work, you need to build the images from [qnib/packer-files](https://github.com/qnib/packer-files).
+
 ```bash
+$ cd aws-u16-docker/
+aws-u16-docker $ packer build packer.json
+*snip*
+```
+Whatever `ami-name` came out from that goes into the next two.
+
+```bash
+$ cd aws-u16-gpu/
+aws-u16-gpu $ packer build -var 'ami_name=aws-docker-nvidia' -var 'source_ami=ami-<id>' packer.json
+*snip*
+$ cd ../aws-u16-slurm/
+aws-u16-slurm $ packer build -var 'ami_name=aws-docker-slurm' -var 'source_ami=ami-<id>' packer.json
+```
+
+And use the output of `aws-docker-nvidia` to build `aws-docker-nvidia-slurm`.
+
+*TODO*: [ ] Build `nvidia` from `slurm` to skip one step.
+
+```bash
+$ cd aws-u16-slurm/
+aws-u16-slurm $ packer build -var 'ami_name=aws-docker-nvidia-slurm' -var 'source_ami=ami-<id>' packer.json
+*snip*
+```
+
+## Deploy
+
+First, generate a keypair on your workstation.
+
+```bash
+$ ssh-keygen -f ${HOME}/.ssh/terraform_aws  -P ""
+Generating public/private rsa key pair.
+```
+
+Afterwards plan the terraform script.
+
+```bash
+$ terraform plan
+*snip*
+Plan: 1 to add, 1 to change, 1 to destroy.
+$
+```
+
+If that does not show an error, go ahead and start the cluster.
+
+```bash
+$ terraform apply
+```
+
+
+## Submit jobs
+
+```bash
+$ ssh -i ~/.ssh/terraform_aws -l ubuntu ec2-xx.compute-1.amazonaws.com
 ubuntu@ip-xx:~$ sinfo
 PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST
 all          up   infinite      2   idle ip-xx,ip-yy

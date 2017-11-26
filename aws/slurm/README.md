@@ -3,7 +3,7 @@ Inspired by [Automating AWS infrastructure with Terraform](https://simonfredsted
 
 ## TODO
 
-- [] Autoconfigure cluster, so that terraform informs `/etc/slurm-llnl/slurm.conf` about the nodes available. Maybe an ansible script afterwards.
+- [ ] Autoconfigure cluster, so that terraform informs `/etc/slurm-llnl/slurm.conf` about the nodes available. Maybe an ansible script afterwards.
 
 ```bash
 ubuntu@ip-xx:~$ sinfo

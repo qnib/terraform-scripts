@@ -1,6 +1,10 @@
 # Slurmn Cluster in aws
 Inspired by [Automating AWS infrastructure with Terraform](https://simonfredsted.com/1459).
 
+## TODO
+
+- [] Autoconfigure cluster, so that terraform informs `/etc/slurm-llnl/slurm.conf` about the nodes available. Maybe an ansible script afterwards.
+
 ```bash
 ubuntu@ip-xx:~$ sinfo
 PARTITION AVAIL  TIMELIMIT  NODES  STATE NODELIST

@@ -3,10 +3,7 @@ variable "private_key_path" {
   default = "~/.ssh/terraform_aws"
 }
 
-variable "aws_amis" {
-  default = {
-    us-east-1 = "ami-b7c150cd"
-  }
+variable "ami_name" {
 }
 
 variable "disk_size" {
@@ -41,4 +38,9 @@ variable "key_pair_id" {
 
 variable "security_group_id" {
   description = "ID of the VPC security group to use for network"
+}
+
+variable "provisioner_remote_exec" {
+  description = "Command that is executed after instance came up"
+  default = "date"
 }

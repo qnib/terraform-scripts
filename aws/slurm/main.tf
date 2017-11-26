@@ -103,7 +103,20 @@ module "slurm_master" {
     subnet_id              = "${aws_subnet.private.id}"
     key_pair_id            = "${aws_key_pair.auth.id}"
     security_group_id      = "${aws_security_group.default.id}"
-
+    ami_name               = "ami-9ff362e5" //aws-docker-slurm 1511656993
+    instance_type          = "t2.micro"
     count                  = 1
     group_name             = "slurm_master"
+}
+
+module "slurm_gpu" {
+    source                 = "./instance"
+    subnet_id              = "${aws_subnet.private.id}"
+    key_pair_id            = "${aws_key_pair.auth.id}"
+    security_group_id      = "${aws_security_group.default.id}"
+    ami_name               = "ami-bff263c5" //aws-docker-nvidia-slurm 1511656827
+    instance_type          = "p2.xlarge"
+    count                  = 1
+    group_name             = "slurm_gpu"
+    provisioner_remote_exec = "sudo systemctl disable slurmctld"
 }

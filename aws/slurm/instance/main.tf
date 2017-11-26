@@ -2,7 +2,7 @@ resource "aws_instance" "instance" {
   count = "${var.count}"
 
   instance_type          = "${var.instance_type}"
-  ami                    = "${lookup(var.aws_amis, var.aws_region)}"
+  ami                    = "${var.ami_name}"
   key_name               = "${var.key_pair_id}"
   vpc_security_group_ids = ["${var.security_group_id}"]
   subnet_id              = "${var.subnet_id}"
@@ -25,7 +25,7 @@ resource "aws_instance" "instance" {
 
   provisioner "remote-exec" {
     inline = [
-      "sudo apt-get -y update",
+      "${var.provisioner_remote_exec}",
     ]
   }
 }
